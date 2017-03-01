@@ -1,0 +1,24 @@
+Hello Hello
+Hello hi
+Hello Hello
+Hello hi
+Hello hey
+
+AlexaMeetupNumbers How many cities have alexa meetups
+AlexaMeetupNumbers How many alexa meetups are there
+
+
+AlexaMeetupCityCheck IF {USCity} has an alexa meetup
+AlexaMeetupCityCheck IF {EuropeanCity} has an alexa meetup
+AlexaMeetupCityCheck does {USCity} has an alexa meetup
+AlexaMeetupCityCheck does {EuropeanCity} has an alexa meetup
+AlexaMeetupCityCheck check {USCity}
+AlexaMeetupCityCheck check {EuropeanCity}
+
+
+AlexaMeetupOrganizerCheck tell me the organizer of the {EuropeanCity} alexa meetup
+AlexaMeetupOrganizerCheck tell me the organizer of the {USCity} alexa meetup
+AlexaMeetupOrganizerCheck who is the organizer of the {EuropeanCity} alexa meetup
+AlexaMeetupOrganizerCheck who is the organizer of the {USCity} alexa meetup
+AlexaMeetupOrganizerCheck whos the organizer of the {EuropeanCity} alexa meetup
+AlexaMeetupOrganizerCheck whos the organizer of the {USCity} alexa meetup
