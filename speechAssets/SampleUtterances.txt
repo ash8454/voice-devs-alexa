@@ -1,9 +1,3 @@
-Hello Hello
-Hello hi
-Hello Hello
-Hello hi
-Hello hey
-
 AlexaMeetupNumbers How many cities have alexa meetups
 AlexaMeetupNumbers How many alexa meetups are there
 
@@ -22,3 +16,11 @@ AlexaMeetupOrganizerCheck who is the organizer of the {EuropeanCity} alexa meetu
 AlexaMeetupOrganizerCheck who is the organizer of the {USCity} alexa meetup
 AlexaMeetupOrganizerCheck whos the organizer of the {EuropeanCity} alexa meetup
 AlexaMeetupOrganizerCheck whos the organizer of the {USCity} alexa meetup
+
+
+NameCapture my name is {USFirstName}
+NameCapture my name is {UKFirstName}
+
+CountryCapture Im from {Country}
+CountryCapture I'm from {Country}
+CountryCapture I am from {Country}

@@ -1,6 +1,28 @@
 {
   "intents": [
     {
+      "intent": "NameCapture",
+      "slots": [
+        {
+          "name": "USFirstName",
+          "type": "AMAZON.US_FIRST_NAME"
+        },
+        {
+          "name": "UKFirstName",
+          "type": "AMAZON.GB_FIRST_NAME"
+        }
+      ]
+    },
+    {
+      "intent": "CountryCapture",
+      "slots": [
+        {
+          "name": "Country",
+          "type": "LIST_OF_COUNTRIES"
+        }
+      ]
+    },
+    {
       "intent": "AlexaMeetupNumbers"
     },
     {
@@ -28,9 +50,6 @@
         "type": "AMAZON.EUROPE_CITY"
       }
       ]
-    },
-    {
-      "intent": "Hello"
     },
     {
       "intent": "AMAZON.StopIntent"
