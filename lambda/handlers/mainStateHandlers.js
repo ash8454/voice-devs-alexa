@@ -6,8 +6,12 @@ var constants = require('../constants/constants');
 //Data
 var alexaMeetups = require('../data/alexaMeetups');
 
-//helpers
+//Helpers
 var convertArrayToReadableString = require('../helpers/convertArrayToReadableString');
+var meetupAPI = require('../helpers/meetupAPI');
+var checkMeetupCity = require('../helpers/checkMeetupCity');
+var getLondonAudio = require('../helpers/getLondonAudio');
+var alexaDateUtil = require('../helpers/alexaDateUtil');
 
 //Onboarding handlers
 var mainStateHandlers = Alexa.CreateStateHandler(constants.states.MAIN, {
@@ -39,35 +43,44 @@ var mainStateHandlers = Alexa.CreateStateHandler(constants.states.MAIN, {
     var EuropeanCitySlot = this.event.request.intent.slots.EuropeanCity.value;
 
     // Get city
-    var city;
-    if (USCitySlot) {
-      city = USCitySlot;
-    } else if (EuropeanCitySlot) {
-      city = EuropeanCitySlot;
-    } else {
-      this.emit(':ask', 'Sorry, I didn\'t recognize that city name.', 'How can i help?');
-    }
+    // var city;
+    // if (USCitySlot) {
+    //   city = USCitySlot;
+    // } else if (EuropeanCitySlot) {
+    //   city = EuropeanCitySlot;
+    // } else {
+    //   this.emit(':ask', 'Sorry, I didn\'t recognize that city name.', 'How can i help?');
+    // }
+    //
+    // // Check for city
+    // var cityMatch = '';
+    // for (var i = 0; i < alexaMeetups.length; i++){
+    //   if (alexaMeetups[i].city.toLowerCase() === city.toLowerCase()) {
+    //     cityMatch = alexaMeetups[i].city;
+    //   }
+    // }
 
-    // Check for city
-    var cityMatch = '';
-    for (var i = 0; i < alexaMeetups.length; i++){
-      if (alexaMeetups[i].city.toLowerCase() === city.toLowerCase()) {
-        cityMatch = alexaMeetups[i].city;
-      }
-    }
+    //Check City Match
+    var cityMatch = checkMeetupCity(USCitySlot, EuropeanCitySlot);
 
     // Add London Audio
-    var londonAudio = ``;
-    if (city.toLowerCase() === 'london') {
-      londonAudio = `<audio src="https://s3.amazonaws.com/aws-advanced-alexa/london-baby.mp3" />`;
-    }
+    // var londonAudio = ``;
+    // if (city.toLowerCase() === 'london') {
+    //   londonAudio = `<audio src="https://s3.amazonaws.com/aws-advanced-alexa/london-baby.mp3" />`;
+    // }
 
 
     //Respond to User
-    if (cityMatch !== '') {
-      this.emit(':ask', `${londonAudio} Yes! ${city} has an Alexa developer meetup!`, 'How can i help?');
+    // if (cityMatch !== '') {
+    //   this.emit(':ask', `${londonAudio} Yes! ${city} has an Alexa developer meetup!`, 'How can i help?');
+    // } else {
+    //   this.emit(':ask', `Sorry, looks like ${city} doesn't have an Alexa developer meet up yet - why don't you start one?`);
+    // }
+
+    if (cityMatch) {
+      this.emit(':ask', `${getLondonAudio(cityMatch.city)} Yes! ${cityMatch.city} has an Alexa developer meetup!`, 'How can i help?');
     } else {
-      this.emit(':ask', `Sorry, looks like ${city} doesn't have an Alexa developer meet up yet - why don't you start one?`);
+      this.emit(':ask', `Sorry, looks like ${USCitySlot || EuropeanCity} doesn't have an Alexa developer meet up yet - why don't you start one?`);
     }
   },
 
@@ -78,44 +91,195 @@ var mainStateHandlers = Alexa.CreateStateHandler(constants.states.MAIN, {
     var EuropeanCitySlot = this.event.request.intent.slots.EuropeanCity.value;
 
     // Get city
-    var city;
-    if (USCitySlot) {
-      city = USCitySlot;
-    } else if (EuropeanCitySlot) {
-      city = EuropeanCitySlot;
-    } else {
-      this.emit(':ask', 'Sorry, I didn\'t recognize that city name.', 'How can i help?');
-    }
+    // var city;
+    // if (USCitySlot) {
+    //   city = USCitySlot;
+    // } else if (EuropeanCitySlot) {
+    //   city = EuropeanCitySlot;
+    // } else {
+    //   this.emit(':ask', 'Sorry, I didn\'t recognize that city name.', 'How can i help?');
+    // }
+    //
+    // // Check for city
+    // var cityMatch = '';
+    // var cityOrganizers;
+    // for (var i = 0; i < alexaMeetups.length; i++){
+    //   if (alexaMeetups[i].city.toLowerCase() === city.toLowerCase()) {
+    //     cityMatch = alexaMeetups[i].city;
+    //     cityMeetupURL = alexaMeetups[i].meetupURL;
+    //   }
+    // }
+    //
+    // // Add London Audio
+    // var londonAudio = ``;
+    // if (city.toLowerCase() === 'london') {
+    //   londonAudio = `<audio src="https://s3.amazonaws.com/aws-advanced-alexa/london-baby.mp3" />`;
+    // }
 
-    // Check for city
-    var cityMatch = '';
-    var cityOrganizers;
-    for (var i = 0; i < alexaMeetups.length; i++){
-      if (alexaMeetups[i].city.toLowerCase() === city.toLowerCase()) {
-        cityMatch = alexaMeetups[i].city;
-        cityOrganizers = alexaMeetups[i].organisers;
-      }
-    }
+    //Check City Match
+    var cityMatch = checkMeetupCity(USCitySlot, EuropeanCitySlot);
 
-    // Add London Audio
-    var londonAudio = ``;
-    if (city.toLowerCase() === 'london') {
-      londonAudio = `<audio src="https://s3.amazonaws.com/aws-advanced-alexa/london-baby.mp3" />`;
-    }
+
 
     //Respond to User
-    if (cityMatch !== '') {
-      //1 Organizer
-      if (cityOrganizers.length === 1) {
-        this.emit(':ask', `${londonAudio} The organizer of the ${city} Alexa developer meetup is ${cityOrganizers[0]}.`, 'How can i help?');
+    if (cityMatch) {
+
+      var accessToken = this.event.session.user.accessToken;
+      // Account linked
+
+      //Get Access Token from Alexa request
+      if (accessToken) {
+        // Get Meetup Group Details from API
+        meetupAPI.GetMeetupGroupDetails(accessToken, cityMatch.meetupURL)
+        .then((meetupDetails) => {
+          //Get organizer name
+          var organizerName = meetupDetails.organizer.name;
+
+          var cardTitle = `${organizerName}`;
+          var cardContent = `The organizer of the ${cityMatch.city} Alexa developer meetup is ${organizerName}`;
+
+          var imageObj = {
+              smallImageUrl: `${meetupDetails.organizer.photo.photo_link}`,
+              largeImageUrl: `${meetupDetails.organizer.photo.photo_link}`
+          };
+          //Response to User
+          this.emit(':askWithCard', `${getLondonAudio(cityMatch.city)} The organizer of the ${cityMatch.city} Alexa developer meetup is ${organizerName}.`,
+           'How can i help?', cardTitle, cardContent, imageObj);
+        })
+        .catch((error) => {
+          //Return error
+          console.log('MEETUP API ERROR: ', error);
+          this.emit(':tell', 'Sorry, there was a problem accessing your meetup account details.');
+        });
+
+      }
+      //Account not linked
+      else {
+        this.emit(':tellWithLinkAccountCard', 'Please link your account to use this skill. I\'ve sent details to your account');
       }
 
-      //Multiple Organizers
-      else {
-        this.emit(':ask', `${londonAudio} The Organizers of the ${city} Alexa developer meetup are ${convertArrayToReadableString(cityOrganizers)}`, 'How can i help?');
-      }
     } else {
-      this.emit(':ask', `Sorry, looks like ${city} doesn't have an Alexa developer meet up yet - why don't you start one?`);
+      this.emit(':ask', `Sorry, looks like ${USCitySlot || EuropeanCitySlot} doesn't have an Alexa developer meet up yet - why don't you start one?`);
+    }
+  },
+
+  'AlexaMeetupMembersCheck': function () {
+
+    // Get Slot Values
+    var USCitySlot = this.event.request.intent.slots.USCity.value;
+    var EuropeanCitySlot = this.event.request.intent.slots.EuropeanCity.value;
+
+    // Get city
+    // var city;
+    // if (USCitySlot) {
+    //   city = USCitySlot;
+    // } else if (EuropeanCitySlot) {
+    //   city = EuropeanCitySlot;
+    // } else {
+    //   this.emit(':ask', 'Sorry, I didn\'t recognize that city name.', 'How can i help?');
+    // }
+    //
+    // // Check for city
+    // var cityMatch = '';
+    // var cityOrganizers;
+    // for (var i = 0; i < alexaMeetups.length; i++){
+    //   if (alexaMeetups[i].city.toLowerCase() === city.toLowerCase()) {
+    //     cityMatch = alexaMeetups[i].city;
+    //     cityMeetupURL = alexaMeetups[i].meetupURL;
+    //   }
+    // }
+    //
+    // // Add London Audio
+    // var londonAudio = ``;
+    // if (city.toLowerCase() === 'london') {
+    //   londonAudio = `<audio src="https://s3.amazonaws.com/aws-advanced-alexa/london-baby.mp3" />`;
+    // }
+    //Check City Match
+    var cityMatch = checkMeetupCity(USCitySlot, EuropeanCitySlot);
+
+
+    //Respond to User
+    if (cityMatch) {
+
+      var accessToken = this.event.session.user.accessToken;
+      // Account linked
+
+      //Get Access Token from Alexa request
+      if (accessToken) {
+        // Get Meetup Group Details from API
+        meetupAPI.GetMeetupGroupDetails(accessToken, cityMatch.meetupURL)
+        .then((meetupDetails) => {
+          //Get Number of Meetup Members
+          var meetupMembers = meetupDetails.members;
+
+          //Response to User
+          this.emit(':ask', `${getLondonAudio(cityMatch.city)} The ${cityMatch.city} Alexa developer meetup currently has ${meetupMembers} members - Nice!. How else can i help you?`,
+           'How can i help?');
+        })
+        .catch((error) => {
+          //Return error
+          console.log('MEETUP API ERROR: ', error);
+          this.emit(':tell', 'Sorry, there was a problem accessing your meetup account details.');
+        });
+
+      }
+      //Account not linked
+      else {
+        this.emit(':tellWithLinkAccountCard', 'Please link your account to use this skill. I\'ve sent details to your account');
+      }
+
+    } else {
+      this.emit(':ask', `Sorry, looks like ${USCitySlot || EuropeanCitySlot} doesn't have an Alexa developer meet up yet - why don't you start one?`);
+    }
+  },
+
+  'AlexaNextMeetupCheck': function () {
+    // Get Slot Values
+    var USCitySlot = this.event.request.intent.slots.USCity.value;
+    var EuropeanCitySlot = this.event.request.intent.slots.EuropeanCity.value;
+
+    // Check City Match
+    var cityMatch = checkMeetupCity(USCitySlot, EuropeanCitySlot);
+
+    // Respond to User
+    if (cityMatch) {
+
+      // Get Access Token from Alexa Request
+      var accessToken = this.event.session.user.accessToken;
+
+      // Account Linked
+      if (accessToken) {
+
+        // Get Meetup Group Details from API
+        meetupAPI.GetMeetupGroupDetails(accessToken, cityMatch.meetupURL)
+          .then((meetupDetails) => {
+
+            // Get Next Event
+            var nextEvent = meetupDetails.next_event;
+
+            if (nextEvent) {
+              var nextEventDate = new Date(nextEvent.time);
+
+              // Respond to User
+              this.emit(':ask', `${getLondonAudio(cityMatch.city)} The next ${cityMatch.city} Alexa developer meetup is on ${alexaDateUtil.getFormattedDate(nextEventDate)} at ${alexaDateUtil.getFormattedTime(nextEventDate)}! Currently ${nextEvent.yes_rsvp_count} members have RSVP'd. How else can i help you?`, 'How can i help?');
+            }
+            else {
+              this.emit(':ask', `${getLondonAudio(cityMatch.city)} There's currently no upcoming meetups in ${cityMatch.city}. You should chase the organiser, ${meetupDetails.organizer.name} to schedule one!. How else can i help you?`, 'How else can i help?');
+            }
+
+          })
+          .catch((error) => {
+            console.log("MEETUP API ERROR: ", error);
+            this.emit(':tell', 'Sorry, there was a problem accessing your meetup account details.');
+          });
+      }
+      // Account Not Linked
+      else {
+        this.emit(':tellWithLinkAccountCard', 'Please link your account to use this skil. I\'ve sent the details to your alexa app.');
+      }
+    }
+    else {
+      this.emit(':ask', `Sorry, looks like ${(USCitySlot || EuropeanCitySlot)} doesn't have an Alexa developer meetup yet - why don't you start one?`, 'How can i help?');
     }
   },
 
