@@ -1,7 +1,9 @@
 {
   "author": "MerryOscar",
   "dependencies": {
-    "alexa-sdk": "^1.0.7"
+    "alexa-sdk": "^1.0.7",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1"
   },
   "name": "lambda",
   "version": "1.0.0",
