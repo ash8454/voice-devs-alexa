@@ -3,4 +3,4 @@ cd lambda
 npm install
 zip -r ../lambda.zip *
 cd ..
-aws lambda update-function-code --function-name voice-devs --zip-file fileb://lambda.zip
+aws lambda update-function-code --function-name landlord-portal --zip-file fileb://lambda.zip

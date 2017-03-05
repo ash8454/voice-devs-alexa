@@ -4,7 +4,7 @@ var constants = Object.freeze({
   appId : '',
 
   //  DynamoDB Table Name
-  dynamoDBTableName : 'VoiceDeveloper',
+  dynamoDBTableName : 'landlord',
 
   // Skill States
   states : {

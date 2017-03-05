@@ -12,51 +12,50 @@ var meetupAPI = require('../helpers/meetupAPI');
 //Onboarding handlers
 var onboardingStateHandlers = Alexa.CreateStateHandler(constants.states.ONBOARDING, {
   'NewSession': function () {
-    //Check for User Data in Session Attributes
-    var userName = this.attributes['userName'];
-    if (userName) {
-      //Change State to MAIN
-      this.handler.state = constants.states.MAIN;
-      this.emitWithState('LaunchRequest');
-      //Welcome User Back by Name
-      //this.emit(':ask', `Welcome back ${userName}! You can ask me about the various alexa meetups aroudn the world or listen to the Alexa Dev Chat podcast.`, 'What would you like to do?');
-    } else {
-      // Get Access Token
-      var accessToken = this.event.session.user.accessToken;
-
-      //Account Linked
-      if (accessToken) {
-        //Get user details from meetup api
-        meetupAPI.GetUserDetails(accessToken)
-        .then((userDetails) => {
-          //Return user details
-          var name = userDetails.name;
-
-          //Store Users Name in Session
-          this.attributes['userName'] = name;
-
-          //Change state to MAIN
-          this.handler.state = constants.states.MAIN;
-          
-          //Welcome User for the First times
-          this.emit(':ask', `Hi ${name} ! Welcome to Voice Devs! The skill that gives you all the information about the alexa developer
-          community. You can ask me about the various alexa meetups around the world, or listen to the Alexa Dev Chat podcast.
-          What would you like to do`, 'What would you like to do?');
-        })
-        .catch((error) => {
-          //Return error
-          console.log('MEETUP API ERROR: ', error);
-          this.emit(':tell', 'Sorry, there was a problem accessing your meetup account details.');
-        });
-
-      }
-      // Account not linked
-      else {
-        this.emit(':tellWithLinkAccountCard', 'Please link your account to use this skill. I\'ve sent details to your account');
-      }
-
-    }
+    this.emit(':ask', `Welcome to Landlord Portal! The skill that gives you all the information about the
+    landlord in your community. You can ask me about the various landlords around your community,
+    But first, I\'d like to get to know you better. Tell me your name by saying: My name is, and then your name.`,
+    `Tell me your name by saying: My name is, and then your name.`);
   },
+  //
+  // 'NewSession': function () {
+  //    // Check for User Data in Session Attributes
+  //    var userName = this.attributes['userName'];
+  //    if (userName) {
+  //      // Change State to Onboarding:
+  //      this.handler.state = constants.states.MAIN;
+  //      this.emitWithState('LaunchRequest');
+  //    } else {
+  //      // Welcome User for the First Time
+  //      this.emit(':ask', `Welcome to Landlord Portal! The skill that gives you all the information about the
+  //      landlord in your community. You can ask me about the various landlords around your community,
+  //      But first, I\'d like to get to know you better. Tell me your name by saying: My name is, and then your name.`,
+  //      `Tell me your name by saying: My name is, and then your name.`);
+  //    }
+  //  },
+
+  // 'NameCapture': function () {
+  //   // Get Slot Values
+  //   var USFirstNameSlot = this.event.request.intent.slots.USFirstName.value;
+  //   var UKFirstNameSlot = this.event.request.intent.slots.UKFirstName.value;
+  //
+  //   // Get Name
+  //   var name;
+  //   if (USFirstNameSlot) {
+  //     name = USFirstNameSlot;
+  //   } else if (UKFirstNameSlot) {
+  //     name = UKFirstNameSlot;
+  //   }
+  //
+  //   // Save Name in Session Attributes and Ask for Country
+  //   if (name) {
+  //     this.attributes['userName'] = name;
+  //     this.emit(':ask', `Ok ${name}! Tell me what information do you want to know about landlord!`, `Tell me what information do you want to know about landlord portal.`);
+  //   } else {
+  //     this.emit(':ask', `Sorry, I didn\'t recognise that name!`, `'Tell me your name by saying: My name is, and then your name.'`);
+  //   }
+  // },
+
   'AMAZON.StopIntent': function () {
     //State Automactially Saved with : tell
     this.emit(':tell', 'Good Bye');
@@ -73,7 +72,7 @@ var onboardingStateHandlers = Alexa.CreateStateHandler(constants.states.ONBOARDI
   },
 
   'AMAZON.HelpIntent': function () {
-    this.emit(':tellWithLinkAccountCard', 'Please link your account to use this skill. I\'ve sent details to your account');
+    this.emit(':ask', 'Please tell me what information do you want to know about landlord portal');
   },
 
   'Unhandled': function () {

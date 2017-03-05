@@ -1,18 +1,8 @@
-AlexaMeetupNumbers How many cities have alexa meetups
-AlexaMeetupNumbers How many alexa meetups are there
+AlexaStocksCheck Check Facebook stock
+AlexaStocksCheck Tell me little bit more about facebook stocks
 
+AlexaLandlordCheck Can you tell me about landlord portal
+AlexaLandlordCheck How many apartments are available for rent
+AlexaLandlordCheck Tell me little bit more about landlord portal
 
-AlexaMeetupCityCheck IF {USCity} has an alexa meetup
-AlexaMeetupCityCheck IF {EuropeanCity} has an alexa meetup
-AlexaMeetupCityCheck does {USCity} has an alexa meetup
-AlexaMeetupCityCheck does {EuropeanCity} has an alexa meetup
-AlexaMeetupCityCheck check {USCity}
-AlexaMeetupCityCheck check {EuropeanCity}
-
-
-AlexaMeetupOrganizerCheck tell me the organizer of the {EuropeanCity} alexa meetup
-AlexaMeetupOrganizerCheck tell me the organizer of the {USCity} alexa meetup
-AlexaMeetupOrganizerCheck who is the organizer of the {EuropeanCity} alexa meetup
-AlexaMeetupOrganizerCheck who is the organizer of the {USCity} alexa meetup
-AlexaMeetupOrganizerCheck whos the organizer of the {EuropeanCity} alexa meetup
-AlexaMeetupOrganizerCheck whos the organizer of the {USCity} alexa meetup
+AlexaPostToDoTaskCheck Post the todos task
